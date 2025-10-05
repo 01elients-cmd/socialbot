@@ -1,4 +1,4 @@
-const fetch = require('node-fetch'); // solo si tu entorno lo necesita
+import fetch from 'node-fetch'; // solo si tu entorno lo necesita
 
 const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
   if (!mensajeUsuario || typeof mensajeUsuario !== 'string') {
@@ -21,7 +21,7 @@ Mensaje recibido: "${mensajeUsuario}"
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openchat-3.5",
+        model: "mistral-7b",
         messages: [
           {
             role: "system",
@@ -39,6 +39,7 @@ Mensaje recibido: "${mensajeUsuario}"
     const respuesta = data.choices?.[0]?.message?.content?.trim();
     if (!respuesta) throw new Error("Respuesta vacía del modelo");
 
+    console.log("🧠 Respuesta del modelo:", data);
     return respuesta;
   } catch (error) {
     console.error("Error al generar respuesta con OpenRouter:", error.message);
