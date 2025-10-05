@@ -7,10 +7,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
 
   const { tono = 'neutral', emoji = '🤖', firma = '', color = '#333' } = estilo;
 
-  const prompt = `
-Eres un bot que responde mensajes en redes sociales para una empresa.
-Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y responde con estilo "${firma}".
-Mensaje recibido: "${mensajeUsuario}"
+  const prompt = `Responde al siguiente mensaje como si fueras el bot de atención al cliente de una empresa. Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y firma como "${firma}". Mensaje: "${mensajeUsuario}""
 `;
 
   try {
@@ -21,7 +18,7 @@ Mensaje recibido: "${mensajeUsuario}"
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistral-7b",
+        model: "openchat-3.5",
         messages: [
           {
             role: "system",
@@ -37,9 +34,12 @@ Mensaje recibido: "${mensajeUsuario}"
 
     const data = await response.json();
     const respuesta = data.choices?.[0]?.message?.content?.trim();
-    if (!respuesta) throw new Error("Respuesta vacía del modelo");
+    if (!respuesta) {
+  console.warn("⚠️ El modelo no respondió. Usando fallback.");
+  return "Lo siento, no pude generar una respuesta en este momento. 😕";
+}
 
-    console.log("🧠 Respuesta del modelo:", data);
+    cconsole.log("🧠 Respuesta completa del modelo:", JSON.stringify(data, null, 2));
     return respuesta;
   } catch (error) {
     console.error("Error al generar respuesta con OpenRouter:", error.message);
