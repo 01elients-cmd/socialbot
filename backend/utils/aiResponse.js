@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'; // solo si tu entorno lo necesita
+const fetch = require('node-fetch');
 
 const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
   if (!mensajeUsuario || typeof mensajeUsuario !== 'string') {
