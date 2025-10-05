@@ -41,6 +41,7 @@ await pool.query(
 );
 
 
+
     // 5. Devolver al frontend
     res.status(200).json({ respuesta: respuestaGenerada });
   } catch (error) {
