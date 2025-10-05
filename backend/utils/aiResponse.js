@@ -12,17 +12,21 @@ Mensaje recibido: "${mensajeUsuario}"
 `;
 
 try {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "mistral-7b", // puedes cambiar a llama-2-13b-chat, gemma-7b, etc.
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
+const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "openchat-3.5",
+    messages: [
+      { role: "system", content: "Eres un bot que responde mensajes en redes sociales para una empresa. Tu estilo debe ser claro, empático y profesional." },
+      { role: "user", content: prompt }
+    ]
+  })
+});
+
 
   const data = await response.json();
   const respuesta = data.choices?.[0]?.message?.content?.trim();
