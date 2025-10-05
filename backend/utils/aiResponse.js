@@ -1,27 +1,46 @@
+const fs = require('fs');
+const path = require('path');
 const fetch = require('node-fetch');
 
-const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
+const generarRespuesta = async (empresaId, mensajeUsuario) => {
   if (!mensajeUsuario || typeof mensajeUsuario !== 'string') {
     throw new Error('Mensaje inválido para generar respuesta');
   }
 
-  const { tono = 'neutral', emoji = '🤖', firma = '', color = '#333' } = estilo;
+  // 🔹 Cargar branding.json de la empresa
+  const filePath = path.join(__dirname, `../config/empresa-${empresaId}.json`);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`No existe branding para empresa ${empresaId}`);
+  }
+
+  const branding = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const {
+    tono = 'neutral',
+    emoji = '🤖',
+    firma = '',
+    color = '#333',
+    modelo = 'meta-llama/llama-3-70b-instruct',
+    estilo = {},
+    intenciones = []
+  } = branding;
 
   const mensaje = mensajeUsuario.toLowerCase();
 
-  // 🔍 Detección de intención: intercambio PayPal ↔ Binance USDT
-  if (
-    mensaje.includes("paypal") &&
-    (mensaje.includes("binance") || mensaje.includes("usdt") || mensaje.includes("cambiar"))
-  ) {
-    return `${emoji} Si quieres escríbenos al WhatsApp 04120953683 para más información. ${firma}`;
+  // 🔍 Detección de intención personalizada por empresa
+  for (const intento of intenciones) {
+    const match = intento.keywords?.every(k => mensaje.includes(k));
+    if (match && intento.respuesta) {
+      return intento.respuesta;
+    }
   }
 
+  // 🧠 Prompt con estilo de la empresa
   const prompt = `
 Eres el bot oficial de atención al cliente de una empresa. Tu estilo debe ser:
 - Tono: ${tono}
 - Emoji favorito: ${emoji}
 - Firma: ${firma}
+- Formato: ${estilo.formato || 'claro y directo'}
 
 Responde al siguiente mensaje del usuario de forma clara, empática y profesional:
 
@@ -36,7 +55,7 @@ Responde al siguiente mensaje del usuario de forma clara, empática y profesiona
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3-70b-instruct",
+        model,
         messages: [
           {
             role: "system",
