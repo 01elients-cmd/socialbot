@@ -7,8 +7,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
 
   const { tono = 'neutral', emoji = '🤖', firma = '', color = '#333' } = estilo;
 
-  const prompt = `Responde al siguiente mensaje como si fueras el bot de atención al cliente de una empresa. Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y firma como "${firma}". Mensaje: "${mensajeUsuario}""
-`;
+  const prompt = `Responde al siguiente mensaje como si fueras el bot de atención al cliente de una empresa. Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y firma como "${firma}". Mensaje: "${mensajeUsuario}"`;
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -18,7 +17,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistral-7b",
+        model: "meta-llama-3-8b-instruct",
         messages: [
           {
             role: "system",
@@ -33,13 +32,14 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
     });
 
     const data = await response.json();
+    console.log("🧠 Respuesta completa del modelo:", JSON.stringify(data, null, 2));
+
     const respuesta = data.choices?.[0]?.message?.content?.trim();
     if (!respuesta) {
-  console.warn("⚠️ El modelo no respondió. Usando fallback.");
-  return "Lo siento, no pude generar una respuesta en este momento. 😕";
-}
+      console.warn("⚠️ El modelo no respondió. Usando fallback.");
+      return "Lo siento, no pude generar una respuesta en este momento. 😕";
+    }
 
-    console.log("🧠 Respuesta completa del modelo:", JSON.stringify(data, null, 2));
     return respuesta;
   } catch (error) {
     console.error("Error al generar respuesta con OpenRouter:", error.message);
