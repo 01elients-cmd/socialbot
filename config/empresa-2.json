@@ -1,0 +1,16 @@
+{
+  "empresa_id": 1,
+  "nombre": "TuMovilMargarita",
+  "tono": "amigable",
+  "emoji": "💚",
+  "firma": "—Equipo TuMovilMargarita",
+  "color": "#60E84D",
+  "modelo": "meta-llama/llama-3-70b-instruct",
+  "estilo": {
+    "intro": "¡Hola! Gracias por escribirnos.",
+    "cierre": "Si tienes más dudas, estamos aquí para ayudarte.",
+    "formato": "breve y directo"
+  },
+  "ubicaciones": [],
+  "entrenamiento": []
+}

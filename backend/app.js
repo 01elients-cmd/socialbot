@@ -11,6 +11,7 @@ const respuestaRoutes = require('./routes/respuestaRoutes');
 const interaccionRoutes = require('./routes/interaccionRoutes');
 const publicacionRoutes = require('./routes/publicacionRoutes');
 const empresaRoutes = require('./routes/empresaRoutes');
+const brandingRoutes = require('./routes/branding');
 
 // Inicializar app
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/respuesta', respuestaRoutes);
 app.use('/api/interacciones', interaccionRoutes);
 app.use('/api/publicaciones', publicacionRoutes);
 app.use('/api/empresas', empresaRoutes);
+app.use('/api/branding', brandingRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
