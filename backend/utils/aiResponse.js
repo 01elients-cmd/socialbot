@@ -18,7 +18,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openchat-3.5",
+        model: "mistral-7b",
         messages: [
           {
             role: "system",
@@ -39,7 +39,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
   return "Lo siento, no pude generar una respuesta en este momento. 😕";
 }
 
-    cconsole.log("🧠 Respuesta completa del modelo:", JSON.stringify(data, null, 2));
+    console.log("🧠 Respuesta completa del modelo:", JSON.stringify(data, null, 2));
     return respuesta;
   } catch (error) {
     console.error("Error al generar respuesta con OpenRouter:", error.message);
