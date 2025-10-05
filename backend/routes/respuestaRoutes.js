@@ -31,17 +31,17 @@ router.post('/', async (req, res) => {
     };
 
     // 3. Generar respuesta con estilo
-    const respuesta = await generarRespuesta(mensajeUsuario, estilo);
+    const respuestaGenerada = await generarRespuesta(mensajeUsuario, estilo);
 
-    // 4. Guardar interacción
+    // 4. Guardar interacción en PostgreSQL
     await pool.query(
       `INSERT INTO interacciones (empresa_id, tipo, respuesta, reaccion, modo)
        VALUES ($1, $2, $3, $4, $5)`,
-      [empresaId, mensajeUsuario, respuesta, null, 'respuesta']
+      [empresaId, 'respuesta', respuestaGenerada, null, 'respuesta']
     );
 
     // 5. Devolver al frontend
-    res.status(200).json({ respuesta });
+    res.status(200).json({ respuesta: respuestaGenerada });
   } catch (error) {
     console.error('Error en /api/respuesta:', error);
     res.status(500).json({ error: error.message });
