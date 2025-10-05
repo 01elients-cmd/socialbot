@@ -1,6 +1,5 @@
 import { API_BASE } from './config.js';
 
-
 export async function cargarEmpresas() {
   try {
     const res = await fetch(`${API_BASE}/api/empresas`);

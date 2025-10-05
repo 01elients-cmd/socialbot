@@ -1,5 +1,3 @@
-const openai = require('./openaiClient');
-
 const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
   if (!mensajeUsuario || typeof mensajeUsuario !== 'string') {
     throw new Error('Mensaje inválido para generar respuesta');
@@ -13,20 +11,29 @@ Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y responde con estilo 
 Mensaje recibido: "${mensajeUsuario}"
 `;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo'
-    });
+try {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "mistral-7b", // puedes cambiar a llama-2-13b-chat, gemma-7b, etc.
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
 
-    const respuesta = completion.choices?.[0]?.message?.content?.trim();
-    if (!respuesta) throw new Error('Respuesta vacía del modelo');
+  const data = await response.json();
+  const respuesta = data.choices?.[0]?.message?.content?.trim();
+  if (!respuesta) throw new Error("Respuesta vacía del modelo");
 
-    return respuesta;
-  } catch (error) {
-    console.error('Error al generar respuesta con OpenAI:', error.message);
-    throw error;
-  }
+  return respuesta;
+} catch (error) {
+  console.error("Error al generar respuesta con OpenRouter:", error.message);
+  throw error;
+}
+
 };
 
 module.exports = { generarRespuesta };
