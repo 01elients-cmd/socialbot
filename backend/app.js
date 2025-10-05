@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+// Rutas
 const respuestaRoutes = require('./routes/respuestaRoutes');
 const interaccionRoutes = require('./routes/interaccionRoutes');
 const publicacionRoutes = require('./routes/publicacionRoutes');
@@ -19,11 +20,22 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Logging básico
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.url}`);
+  next();
+});
+
 // Rutas
 app.use('/api/respuesta', respuestaRoutes);
 app.use('/api/interacciones', interaccionRoutes);
 app.use('/api/publicaciones', publicacionRoutes);
 app.use('/api/empresas', empresaRoutes);
+
+// Ruta base
+app.get('/', (req, res) => {
+  res.send('🧠 API SocialBot activa');
+});
 
 // Puerto
 const PORT = process.env.PORT || 5000;
