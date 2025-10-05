@@ -17,7 +17,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "meta-llama-3-8b-instruct",
+      model: "openchat-3.5",
         messages: [
           {
             role: "system",
