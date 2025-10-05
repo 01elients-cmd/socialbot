@@ -34,11 +34,12 @@ router.post('/', async (req, res) => {
     const respuestaGenerada = await generarRespuesta(mensajeUsuario, estilo);
 
     // 4. Guardar interacción en PostgreSQL
-    await pool.query(
-      `INSERT INTO interacciones (empresa_id, tipo, respuesta, reaccion, modo)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [empresaId, 'respuesta', respuestaGenerada, null, 'respuesta']
-    );
+await pool.query(
+  `INSERT INTO interacciones (empresa_id, tipo, respuesta, reaccion, modo)
+   VALUES ($1, $2, $3, $4, $5)`,
+  [empresaId, 'respuesta', respuestaGenerada, null, 'respuesta']
+);
+
 
     // 5. Devolver al frontend
     res.status(200).json({ respuesta: respuestaGenerada });
