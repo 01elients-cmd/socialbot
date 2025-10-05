@@ -7,7 +7,26 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
 
   const { tono = 'neutral', emoji = '🤖', firma = '', color = '#333' } = estilo;
 
-  const prompt = `Responde al siguiente mensaje como si fueras el bot de atención al cliente de una empresa. Usa un tono ${tono}, incluye el emoji favorito (${emoji}) y firma como "${firma}". Mensaje: "${mensajeUsuario}"`;
+  const mensaje = mensajeUsuario.toLowerCase();
+
+  // 🔍 Detección de intención: intercambio PayPal ↔ Binance USDT
+  if (
+    mensaje.includes("paypal") &&
+    (mensaje.includes("binance") || mensaje.includes("usdt") || mensaje.includes("cambiar"))
+  ) {
+    return `${emoji} Si quieres escríbenos al WhatsApp 04120953683 para más información. ${firma}`;
+  }
+
+  const prompt = `
+Eres el bot oficial de atención al cliente de una empresa. Tu estilo debe ser:
+- Tono: ${tono}
+- Emoji favorito: ${emoji}
+- Firma: ${firma}
+
+Responde al siguiente mensaje del usuario de forma clara, empática y profesional:
+
+"${mensajeUsuario}"
+`;
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -17,7 +36,7 @@ const generarRespuesta = async (mensajeUsuario, estilo = {}) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-      model: "meta-llama/llama-3-70b-instruct",
+        model: "meta-llama/llama-3-70b-instruct",
         messages: [
           {
             role: "system",
