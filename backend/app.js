@@ -11,7 +11,8 @@ const respuestaRoutes = require('./routes/respuestaRoutes');
 const interaccionRoutes = require('./routes/interaccionRoutes');
 const publicacionRoutes = require('./routes/publicacionRoutes');
 const empresaRoutes = require('./routes/empresaRoutes');
-const brandingRoutes = require('./routes/branding');
+const brandingRoutes = require('./routes/brandingRoutes');
+
 
 // Inicializar app
 const app = express();
