@@ -1,26 +1,42 @@
-// backend/routes/telegramRoutes.js
 const express = require('express');
 const router = express.Router();
 const { generarRespuesta } = require('../utils/aiResponse');
 const fetch = require('node-fetch');
 const pool = require('../db');
 
+// Webhook de Telegram
 router.post('/webhook', async (req, res) => {
-  const mensajeUsuario = req.body.message?.text;
-  const chatId = req.body.message?.chat?.id;
-
-  if (!mensajeUsuario || !chatId) return res.sendStatus(400);
-
   try {
-    const empresaId = 5; // 🔧 Puedes modularizar esto por chatId si lo deseas
+    const body = req.body;
+    console.log("📩 Webhook recibido:", JSON.stringify(body, null, 2));
+
+    const mensajeUsuario = body.message?.text;
+    const chatId = body.message?.chat?.id;
+
+    if (!mensajeUsuario || !chatId) {
+      console.warn("⚠️ Datos incompletos:", { mensajeUsuario, chatId });
+      return res.sendStatus(400);
+    }
+
+    const empresaId = 5; // 🔧 Modularizable por chatId
     const respuesta = await generarRespuesta(empresaId, mensajeUsuario);
 
     // Enviar respuesta al usuario
-    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const telegramURL = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const payload = {
+      chat_id: chatId,
+      text: respuesta,
+      parse_mode: 'Markdown' // 🔧 Opcional: mejora formato
+    };
+
+    const telegramRes = await fetch(telegramURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: respuesta })
+      body: JSON.stringify(payload)
     });
+
+    const telegramData = await telegramRes.json();
+    console.log("📤 Respuesta enviada a Telegram:", telegramData);
 
     // Registrar interacción
     await pool.query(
@@ -31,7 +47,7 @@ router.post('/webhook', async (req, res) => {
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("❌ Error en webhook de Telegram:", error.message);
+    console.error("❌ Error en webhook de Telegram:", error);
     res.sendStatus(500);
   }
 });
