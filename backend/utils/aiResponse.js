@@ -19,10 +19,16 @@ const generarRespuesta = async (empresaId, mensajeUsuario) => {
     emoji = '🤖',
     firma = '',
     color = '#333',
-    modelo = 'meta-llama/llama-3-70b-instruct',
+    modelo: modeloBranding,
     estilo = {},
     intenciones = []
   } = branding;
+
+  const model = typeof modeloBranding === 'string' && modeloBranding.length > 0
+    ? modeloBranding
+    : 'meta-llama/llama-3-70b-instruct';
+
+  console.log("🧠 Modelo seleccionado:", model);
 
   const mensaje = mensajeUsuario.toLowerCase();
 
