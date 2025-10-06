@@ -12,7 +12,7 @@ const interaccionRoutes = require('./routes/interaccionRoutes');
 const publicacionRoutes = require('./routes/publicacionRoutes');
 const empresaRoutes = require('./routes/empresaRoutes');
 const brandingRoutes = require('./routes/brandingRoutes');
-
+const telegramRoutes = require('./routes/telegramRoutes');
 
 // Inicializar app
 const app = express();
@@ -34,6 +34,7 @@ app.use('/api/interacciones', interaccionRoutes);
 app.use('/api/publicaciones', publicacionRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/branding', brandingRoutes);
+app.use('/api/telegram', telegramRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
