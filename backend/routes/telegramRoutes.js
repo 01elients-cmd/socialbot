@@ -1,3 +1,9 @@
+const express = require('express');
+const router = express.Router();
+const { generarRespuesta } = require('../utils/aiResponse');
+const fetch = require('node-fetch');
+const pool = require('../db');
+
 router.post('/webhook', async (req, res) => {
   try {
     const body = req.body;
