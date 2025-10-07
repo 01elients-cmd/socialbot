@@ -1,32 +1,47 @@
-const express = require('express');
-const router = express.Router();
-const { generarRespuesta } = require('../utils/aiResponse');
-const fetch = require('node-fetch');
-const pool = require('../db');
-
-// Webhook de Telegram
 router.post('/webhook', async (req, res) => {
   try {
     const body = req.body;
     console.log("📩 Webhook recibido:", JSON.stringify(body, null, 2));
 
-    const mensajeUsuario = body.message?.text;
     const chatId = body.message?.chat?.id;
+    const mensajeTexto = body.message?.text;
+    const mensajeVoz = body.message?.voice?.file_id;
 
-    if (!mensajeUsuario || !chatId) {
-      console.warn("⚠️ Datos incompletos:", { mensajeUsuario, chatId });
+    if (!chatId) {
+      console.warn("⚠️ Chat ID faltante");
       return res.sendStatus(400);
     }
 
+    let mensajeUsuario = mensajeTexto || mensajeVoz;
+
+    if (!mensajeUsuario) {
+      console.warn("⚠️ Mensaje no procesable:", { mensajeTexto, mensajeVoz });
+      await enviarMensaje(chatId, "No pude entender tu mensaje. ¿Podrías repetirlo o enviarlo como texto?");
+      return res.sendStatus(200);
+    }
+
     const empresaId = 5; // 🔧 Modularizable por chatId
+
+    // Si es voz, puedes guardar el file_id y preparar transcripción
+    if (mensajeVoz) {
+      await pool.query(
+        `INSERT INTO interacciones (empresa_id, tipo, respuesta, reaccion, modo)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [empresaId, 'telegram', `🎙️ Mensaje de voz recibido: ${mensajeVoz}`, null, 'voz']
+      );
+
+      await enviarMensaje(chatId, "Recibimos tu mensaje de voz 🎙️. ¿Quieres que lo transcribamos o lo respondamos directamente?");
+      return res.sendStatus(200);
+    }
+
+    // Si es texto, generar respuesta normal
     const respuesta = await generarRespuesta(empresaId, mensajeUsuario);
 
-    // Enviar respuesta al usuario
     const telegramURL = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
     const payload = {
       chat_id: chatId,
       text: respuesta,
-      parse_mode: 'Markdown' // 🔧 Opcional: mejora formato
+      parse_mode: 'Markdown'
     };
 
     const telegramRes = await fetch(telegramURL, {
@@ -38,7 +53,6 @@ router.post('/webhook', async (req, res) => {
     const telegramData = await telegramRes.json();
     console.log("📤 Respuesta enviada a Telegram:", telegramData);
 
-    // Registrar interacción
     await pool.query(
       `INSERT INTO interacciones (empresa_id, tipo, respuesta, reaccion, modo)
        VALUES ($1, $2, $3, $4, $5)`,
@@ -51,5 +65,3 @@ router.post('/webhook', async (req, res) => {
     res.sendStatus(500);
   }
 });
-
-module.exports = router;
