@@ -3,6 +3,7 @@ const router = express.Router();
 const { generarRespuesta } = require('../utils/aiResponse');
 const fetch = require('node-fetch');
 const pool = require('../db');
+const enviarMensaje = require('../utils/enviarMensaje'); // ✅ Importación necesaria
 
 router.post('/webhook', async (req, res) => {
   try {
@@ -22,7 +23,7 @@ router.post('/webhook', async (req, res) => {
 
     if (!mensajeUsuario) {
       console.warn("⚠️ Mensaje no procesable:", { mensajeTexto, mensajeVoz });
-      await enviarMensaje(chatId, "No pude entender tu mensaje. ¿Podrías repetirlo o enviarlo como texto?");
+      await enviarMensaje(chatId, "No pude entender tu mensaje. ¿Podrías repetirlo o enviarlo como texto?", 5);
       return res.sendStatus(200);
     }
 
@@ -36,7 +37,7 @@ router.post('/webhook', async (req, res) => {
         [empresaId, 'telegram', `🎙️ Mensaje de voz recibido: ${mensajeVoz}`, null, 'voz']
       );
 
-      await enviarMensaje(chatId, "Recibimos tu mensaje de voz 🎙️. ¿Quieres que lo transcribamos o lo respondamos directamente?");
+      await enviarMensaje(chatId, "Recibimos tu mensaje de voz 🎙️. ¿Quieres que lo transcribamos o lo respondamos directamente?", empresaId);
       return res.sendStatus(200);
     }
 
@@ -73,4 +74,3 @@ router.post('/webhook', async (req, res) => {
 });
 
 module.exports = router;
-
