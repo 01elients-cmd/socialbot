@@ -1,5 +1,7 @@
 // Cargar variables de entorno
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+
 
 // Importaciones
 const express = require('express');

@@ -2,7 +2,7 @@
   "name": "socialbot",
   "version": "1.1.0",
   "scripts": {
-    "start": "cd backend && node app.js",
+    "start": "node backend/app.js",
     "install": "cd backend && npm install"
   }
 }
