@@ -1,6 +1,8 @@
 {
-  "dependencies": {
-    "node-fetch": "^3.3.2",
-    "pg": "^8.16.3"
+  "name": "socialbot",
+  "version": "1.1.0",
+  "scripts": {
+    "start": "cd backend && node app.js",
+    "install": "cd backend && npm install"
   }
 }
